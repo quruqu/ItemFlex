@@ -1,0 +1,13 @@
+player_inventory_message: '§6%player%님의 인벤토리'
+enderchest_message: '§5%player%님의 엔더상자'
+mainhand_message: '§a%player%님의 메인핸드'
+showitem_message: <%player%> §7[§r%inventory_message%§7]
+showitem:
+  error: §c/showitem <인벤토리> 형식으로 입력하세요.
+  no_item: §c자랑할 아이템이 없습니다.
+seeitem:
+  no_player: §c플레이어를 찾을 수 없습니다.
+  no_item: §c아이템이 없습니다.
+  error: §c/seeitem <플레이어> <인벤토리> 형식으로 입력하세요
+  shulkerbox_message: '%player%님의 셜커 상자'
+reload_message: §a리로드 완료!

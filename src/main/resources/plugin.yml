@@ -1,0 +1,9 @@
+name: ItemFlex
+version: '1.0-SNAPSHOT'
+main: me.ujun.Main
+api-version: '1.21'
+commands:
+  showitem:
+  seeitem:
+  reload-itemflex:
+    permission: op
