@@ -1,13 +1,8 @@
 package me.ujun;
 
 import org.bukkit.Bukkit;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.ObjectInputFilter;
-import java.lang.module.Configuration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;

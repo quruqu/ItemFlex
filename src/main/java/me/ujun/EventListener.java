@@ -3,8 +3,6 @@ package me.ujun;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.block.ShulkerBox;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -88,7 +86,7 @@ public class EventListener implements org.bukkit.event.Listener {
                     Inventory shulkerInventory = shulkerBox.getInventory();
                     Player target = Bukkit.getPlayer(viewingPlayers.get(player.getUniqueId()));
 
-                    String shulkerBoxMessage = plugin.getConfig().getString("seeitem.shulkerbox_message", "aa");
+                    String shulkerBoxMessage = plugin.getConfig().getString("seeitem.shulkerbox_message",  target.getName() + "'s ShulkerBox");
                     Inventory gui = Bukkit.createInventory(null, 27, shulkerBoxMessage.replace("%player%", target.getName()));
 
                     // 셜커 박스의 내용을 GUI에 추가

@@ -43,7 +43,7 @@ public class Command implements CommandExecutor {
             Player player = (Player) sender;
             
             if (args.length != 1) {
-                player.sendMessage(plugin.getConfig().getString("showitem.error", "형식 잘못됨"));
+                player.sendMessage(plugin.getConfig().getString("showitem.error", "§cFormat is incorrect"));
                 return false;
             }
 
@@ -57,7 +57,7 @@ public class Command implements CommandExecutor {
                     ItemStack copyItem = player.getInventory().getItemInMainHand().clone();
 
                     if (copyItem.isEmpty()) {
-                        player.sendMessage(plugin.getConfig().getString("showitem.no_item", "아이템이 없습니다."));
+                        player.sendMessage(plugin.getConfig().getString("showitem.no_item", "§cno item"));
                         return false;
                     }
 
@@ -68,7 +68,7 @@ public class Command implements CommandExecutor {
                     ItemStack[] originalInventory = player.getInventory().getContents().clone();
 
                     if (isInventoryEmpty(originalInventory)) {
-                        player.sendMessage(plugin.getConfig().getString("showitem.no_item", "아이템이 없습니다."));
+                        player.sendMessage(plugin.getConfig().getString("showitem.no_item", "§cno item"));
                         return false;
                     }
 
@@ -79,7 +79,7 @@ public class Command implements CommandExecutor {
                     ItemStack[] originalEnderChest = player.getEnderChest().getContents().clone();
 
                     if (isInventoryEmpty(originalEnderChest)) {
-                        player.sendMessage(plugin.getConfig().getString("showitem.no_item", "아이템이 없습니다."));
+                        player.sendMessage(plugin.getConfig().getString("showitem.no_item", "§cno item"));
                         return false;
                     }
 
@@ -87,7 +87,7 @@ public class Command implements CommandExecutor {
                     inventory_message = "enderchest";
                     break;
                 default:
-                    player.sendMessage(plugin.getConfig().getString("showitem.error", "형식 잘못됨"));
+                    player.sendMessage(plugin.getConfig().getString("showitem.error", "§cFormat is incorrect"));
             
             }
 
@@ -107,7 +107,7 @@ public class Command implements CommandExecutor {
 
         if (command.getName().equalsIgnoreCase("seeitem")) {
             if (args.length != 2) {
-                sender.sendMessage(plugin.getConfig().getString("seeitem.error", "형식 잘못됨"));
+                sender.sendMessage(plugin.getConfig().getString("seeitem.error", "§cFormat is incorrect"));
                 return true;
             }
 
@@ -118,7 +118,7 @@ public class Command implements CommandExecutor {
             Player target = Bukkit.getPlayer(targetName);
 
             if (target == null) {
-                viewer.sendMessage(plugin.getConfig().getString("seeitem.no_player", " §c플레이어를 첮울 수 없습니다!"));
+                viewer.sendMessage(plugin.getConfig().getString("seeitem.no_player", "§cno player"));
                 return true;
             }
 
@@ -166,7 +166,7 @@ public class Command implements CommandExecutor {
 
     private void seeHandItem(Player target, Player viewer) {
         if (!flexedHandItem.containsKey(target.getUniqueId())) {
-            viewer.sendMessage(plugin.getConfig().getString("seeitem.no_item", " §c아이템이 없습니다!"));
+            viewer.sendMessage(plugin.getConfig().getString("seeitem.no_item", "§cno item"));
             return;
         }
 
@@ -190,7 +190,7 @@ public class Command implements CommandExecutor {
 
     private void seeEnderChestGui(Player target, Player viewer) {
         if (!flexedEnderChest.containsKey(target.getUniqueId())) {
-            viewer.sendMessage(plugin.getConfig().getString("seeitem.no_item", " §c아이템이 없습니다!"));
+            viewer.sendMessage(plugin.getConfig().getString("seeitem.no_item", "§cno item"));
             return;
         }
 
@@ -218,7 +218,7 @@ public class Command implements CommandExecutor {
     private void seeInventoryGui(Player target, Player viewer) {
 
         if (!flexedInventory.containsKey(target.getUniqueId())) {
-            viewer.sendMessage(plugin.getConfig().getString("seeitem.no_item", " §c아이템이 없습니다!"));
+            viewer.sendMessage(plugin.getConfig().getString("seeitem.no_item", "§cno item"));
             return;
         }
 
