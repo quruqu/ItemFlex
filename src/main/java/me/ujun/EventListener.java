@@ -11,6 +11,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
@@ -18,12 +19,12 @@ import java.util.*;
 
 public class EventListener implements org.bukkit.event.Listener {
 
-    private final Map<UUID, Boolean> viewingPlayers;
+    private final Map<UUID, UUID> viewingPlayers;
     private final Map<UUID, Inventory> previousInventories;
     private final Set<UUID> forceOpeningPlayers = new HashSet<>();
     private final JavaPlugin plugin;
 
-    public EventListener(Map<UUID, Boolean> viewingPlayers, JavaPlugin plugin) {
+    public EventListener(Map<UUID, UUID> viewingPlayers, JavaPlugin plugin) {
         this.viewingPlayers = viewingPlayers;
         this.previousInventories = new HashMap<>();
         this.plugin = plugin;
@@ -70,12 +71,13 @@ public class EventListener implements org.bukkit.event.Listener {
         }
 
         ItemStack clickedItem = event.getCurrentItem();
-            // 셜커 박스를 클릭한 경우
+        ItemMeta meta = clickedItem.getItemMeta();
 
-        if (isShulkerBox(clickedItem)) {
 
-            if (clickedItem.hasItemMeta()) {
+            //데이터가 블록데이터인지
+            if (meta instanceof BlockStateMeta) {
                 BlockStateMeta blockStateMeta = (BlockStateMeta) clickedItem.getItemMeta();
+                //데이터가 있고 셜커박스인지
                 if (blockStateMeta != null && blockStateMeta.getBlockState() instanceof ShulkerBox) {
 
 
@@ -84,9 +86,10 @@ public class EventListener implements org.bukkit.event.Listener {
 
                     ShulkerBox shulkerBox = (ShulkerBox) blockStateMeta.getBlockState();
                     Inventory shulkerInventory = shulkerBox.getInventory();
+                    Player target = Bukkit.getPlayer(viewingPlayers.get(player.getUniqueId()));
 
                     String shulkerBoxMessage = plugin.getConfig().getString("seeitem.shulkerbox_message", "aa");
-                    Inventory gui = Bukkit.createInventory(null, 27, shulkerBoxMessage.replace("%player%", player.getName()));
+                    Inventory gui = Bukkit.createInventory(null, 27, shulkerBoxMessage.replace("%player%", target.getName()));
 
                     // 셜커 박스의 내용을 GUI에 추가
                     for (int i = 0; i < shulkerInventory.getSize(); i++) {
@@ -98,17 +101,13 @@ public class EventListener implements org.bukkit.event.Listener {
 
                     player.openInventory(gui);
 
-                    viewingPlayers.put(player.getUniqueId(), true);
+                    viewingPlayers.put(player.getUniqueId(), target.getUniqueId());
+                }
+                else {
+                    event.setCancelled(true);
                 }
             } else {
                 event.setCancelled(true);
             }
-        } else {
-                event.setCancelled(true);
-            }
-    }
-
-    private boolean isShulkerBox(ItemStack item) {
-        return item.getType() == Material.SHULKER_BOX || item.getType().name().endsWith("_SHULKER_BOX");
     }
 }

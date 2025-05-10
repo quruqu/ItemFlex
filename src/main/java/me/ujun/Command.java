@@ -23,11 +23,11 @@ public class Command implements CommandExecutor {
     private final Map<UUID, ItemStack[]> flexedInventory = new HashMap<>();
     private final Map<UUID, ItemStack[]> flexedEnderChest = new HashMap<>();
     private final Map<UUID, ItemStack> flexedHandItem = new HashMap<>();
-    private final Map<UUID, Boolean> viewingPlayers;
+    private final Map<UUID, UUID> viewingPlayers;
     private final Main plugin;
     Map<String, String> placeholders = new HashMap<>();
 
-    public Command(Map<UUID, Boolean> viewingPlayers, Main plugin) {
+    public Command(Map<UUID, UUID> viewingPlayers, Main plugin) {
         this.viewingPlayers = viewingPlayers;
         this.plugin = plugin;
     }
@@ -124,13 +124,13 @@ public class Command implements CommandExecutor {
 
             switch (subcommand) {
                 case "inventory":
-                    showInventoryGui(target, viewer);
+                    seeInventoryGui(target, viewer);
                     break;
                 case "enderchest":
-                    showEnderChestGui(target, viewer);
+                    seeEnderChestGui(target, viewer);
                     break;
                 case "mainhand":
-                    showHandItem(target, viewer);
+                    seeHandItem(target, viewer);
                     break;
                 default:
             }
@@ -164,13 +164,13 @@ public class Command implements CommandExecutor {
 
 
 
-    private void showHandItem(Player target, Player viewer) {
+    private void seeHandItem(Player target, Player viewer) {
         if (!flexedHandItem.containsKey(target.getUniqueId())) {
             viewer.sendMessage(plugin.getConfig().getString("seeitem.no_item", " §c아이템이 없습니다!"));
             return;
         }
 
-        viewingPlayers.put(viewer.getUniqueId(), true);
+        viewingPlayers.put(viewer.getUniqueId(), target.getUniqueId());
 
         ItemStack handItem = flexedHandItem.get(target.getUniqueId()); // 메인 핸드 아이템
 
@@ -188,13 +188,13 @@ public class Command implements CommandExecutor {
         viewer.openInventory(gui);
     }
 
-    private void showEnderChestGui(Player target, Player viewer) {
+    private void seeEnderChestGui(Player target, Player viewer) {
         if (!flexedEnderChest.containsKey(target.getUniqueId())) {
             viewer.sendMessage(plugin.getConfig().getString("seeitem.no_item", " §c아이템이 없습니다!"));
             return;
         }
 
-        viewingPlayers.put(viewer.getUniqueId(), true);
+        viewingPlayers.put(viewer.getUniqueId(), target.getUniqueId());
 
         ItemStack[] items = flexedEnderChest.get(target.getUniqueId());
         int size = Math.min(items.length, 27); // 9단위로 맞추고 최대 54칸
@@ -215,14 +215,14 @@ public class Command implements CommandExecutor {
     }
 
 
-    private void showInventoryGui(Player target, Player viewer) {
+    private void seeInventoryGui(Player target, Player viewer) {
 
         if (!flexedInventory.containsKey(target.getUniqueId())) {
             viewer.sendMessage(plugin.getConfig().getString("seeitem.no_item", " §c아이템이 없습니다!"));
             return;
         }
 
-        viewingPlayers.put(viewer.getUniqueId(), true);
+        viewingPlayers.put(viewer.getUniqueId(), target.getUniqueId());
 
         ItemStack[] items = flexedInventory.get(target.getUniqueId());
         ItemStack[] armorItems = new ItemStack[4]; // 갑옷 슬롯 (4개)

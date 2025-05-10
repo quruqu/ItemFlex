@@ -15,7 +15,7 @@ import java.util.UUID;
 
 public final class Main extends JavaPlugin{
 
-    private final Map<UUID, Boolean> viewingPlayers = new HashMap<>();
+    private final Map<UUID, UUID> viewingPlayers = new HashMap<>();
 
     @Override
     public void onEnable() {
