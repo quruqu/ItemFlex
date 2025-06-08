@@ -1,17 +1,18 @@
-package me.ujun;
+package me.ujun.commands;
 
+import me.ujun.ItemFlexPlugin;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 
-public class ReloadCommand implements CommandExecutor {
+public class ReloadCMD implements CommandExecutor {
 
-    private Main plugin;
+    private final ItemFlexPlugin plugin;
 
 
-    public ReloadCommand(Main plugin) {
+    public ReloadCMD(ItemFlexPlugin plugin) {
         this.plugin = plugin;
     }
 
@@ -22,7 +23,7 @@ public class ReloadCommand implements CommandExecutor {
 
         if (command.getName().equals("reload-itemflex")) {
 
-            player.sendMessage(plugin.getConfig().getString("reload_message", "리로드 완료"));
+            player.sendMessage(plugin.getConfig().getString("reload_message", "reload complete!"));
             plugin.reloadConfig();
         }
 

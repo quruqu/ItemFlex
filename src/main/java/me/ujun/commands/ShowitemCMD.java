@@ -1,39 +1,37 @@
-package me.ujun;
+package me.ujun.commands;
 
+import me.ujun.ItemFlexPlugin;
+import me.ujun.utils.Storage;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-public class Command implements CommandExecutor {
+public class ShowitemCMD implements CommandExecutor {
 
-    private final Map<UUID, ItemStack[]> flexedInventory = new HashMap<>();
-    private final Map<UUID, ItemStack[]> flexedEnderChest = new HashMap<>();
-    private final Map<UUID, ItemStack> flexedHandItem = new HashMap<>();
-    private final Map<UUID, UUID> viewingPlayers;
-    private final Main plugin;
+    private final ItemFlexPlugin plugin;
     Map<String, String> placeholders = new HashMap<>();
 
-    public Command(Map<UUID, UUID> viewingPlayers, Main plugin) {
-        this.viewingPlayers = viewingPlayers;
+    public ShowitemCMD(ItemFlexPlugin plugin) {
         this.plugin = plugin;
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, org.bukkit.command.Command command, String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (command.getName().equalsIgnoreCase("showitem")) {
             if (!(sender instanceof Player)) {
                 sender.sendMessage(ChatColor.RED + "only player can use this command");
@@ -61,7 +59,7 @@ public class Command implements CommandExecutor {
                         return false;
                     }
 
-                    flexedHandItem.put(player.getUniqueId(), copyItem);
+                    Storage.flexedHandItem.put(player.getUniqueId(), copyItem);
                     inventory_message = "mainhand";
                     break;
                 case "inventory":
@@ -72,7 +70,7 @@ public class Command implements CommandExecutor {
                         return false;
                     }
 
-                    flexedInventory.put(player.getUniqueId(), copyInventory(originalInventory));
+                    Storage.flexedInventory.put(player.getUniqueId(), copyInventory(originalInventory));
                     inventory_message = "player_inventory";
                     break;
                 case "enderchest":
@@ -83,7 +81,7 @@ public class Command implements CommandExecutor {
                         return false;
                     }
 
-                    flexedEnderChest.put(player.getUniqueId(), copyInventory(originalEnderChest));
+                    Storage.flexedEnderChest.put(player.getUniqueId(), copyInventory(originalEnderChest));
                     inventory_message = "enderchest";
                     break;
                 default:
@@ -105,38 +103,7 @@ public class Command implements CommandExecutor {
             }
         }
 
-        if (command.getName().equalsIgnoreCase("seeitem")) {
-            if (args.length != 2) {
-                sender.sendMessage(plugin.getConfig().getString("seeitem.error", "§cFormat is incorrect"));
-                return true;
-            }
 
-            Player viewer = (Player) sender;
-            String targetName = args[0];
-            String subcommand = args[1];
-
-            Player target = Bukkit.getPlayer(targetName);
-
-            if (target == null) {
-                viewer.sendMessage(plugin.getConfig().getString("seeitem.no_player", "§cno player"));
-                return true;
-            }
-
-            switch (subcommand) {
-                case "inventory":
-                    seeInventoryGui(target, viewer);
-                    break;
-                case "enderchest":
-                    seeEnderChestGui(target, viewer);
-                    break;
-                case "mainhand":
-                    seeHandItem(target, viewer);
-                    break;
-                default:
-            }
-            return true;
-
-        }
         return false;
     }
 
@@ -165,14 +132,14 @@ public class Command implements CommandExecutor {
 
 
     private void seeHandItem(Player target, Player viewer) {
-        if (!flexedHandItem.containsKey(target.getUniqueId())) {
+        if (!Storage.flexedHandItem.containsKey(target.getUniqueId())) {
             viewer.sendMessage(plugin.getConfig().getString("seeitem.no_item", "§cno item"));
             return;
         }
 
-        viewingPlayers.put(viewer.getUniqueId(), target.getUniqueId());
+        Storage.viewingPlayers.put(viewer.getUniqueId(), target.getUniqueId());
 
-        ItemStack handItem = flexedHandItem.get(target.getUniqueId()); // 메인 핸드 아이템
+        ItemStack handItem = Storage.flexedHandItem.get(target.getUniqueId()); // 메인 핸드 아이템
 
 
         String inventoryTitle = plugin.getConfig().getString("mainhand_message", target.getName()).replace("%player%", target.getName());
@@ -188,87 +155,6 @@ public class Command implements CommandExecutor {
         viewer.openInventory(gui);
     }
 
-    private void seeEnderChestGui(Player target, Player viewer) {
-        if (!flexedEnderChest.containsKey(target.getUniqueId())) {
-            viewer.sendMessage(plugin.getConfig().getString("seeitem.no_item", "§cno item"));
-            return;
-        }
-
-        viewingPlayers.put(viewer.getUniqueId(), target.getUniqueId());
-
-        ItemStack[] items = flexedEnderChest.get(target.getUniqueId());
-        int size = Math.min(items.length, 27); // 9단위로 맞추고 최대 54칸
-
-        String inventoryTitle = plugin.getConfig().getString("enderchest_message", target.getName()).replace("%player%", target.getName());
-        inventoryTitle = ChatColor.stripColor(ChatColor.translateAlternateColorCodes('§', inventoryTitle));
-        Inventory gui = Bukkit.createInventory(null, size, ChatColor.BLACK + inventoryTitle);
-
-        for (int i = 0; i < items.length && i < size; i++) {
-            if (items[i] != null && items[i].getType() != Material.AIR) {
-                gui.setItem(i, items[i]);
-            } else {
-                gui.setItem(i, new ItemStack(Material.AIR));
-            }
-        }
-
-        viewer.openInventory(gui);
-    }
-
-
-    private void seeInventoryGui(Player target, Player viewer) {
-
-        if (!flexedInventory.containsKey(target.getUniqueId())) {
-            viewer.sendMessage(plugin.getConfig().getString("seeitem.no_item", "§cno item"));
-            return;
-        }
-
-        viewingPlayers.put(viewer.getUniqueId(), target.getUniqueId());
-
-        ItemStack[] items = flexedInventory.get(target.getUniqueId());
-        ItemStack[] armorItems = new ItemStack[4]; // 갑옷 슬롯 (4개)
-        System.arraycopy(items, 36, armorItems, 0, 4); // 36번부터 39번까지 갑옷
-
-        ItemStack offhandItem = items[40]; // 오프핸드 아이템 (40번)
-
-        String inventoryTitle = plugin.getConfig().getString("player_inventory_message", target.getName()).replace("%player%", target.getName());
-        inventoryTitle = ChatColor.stripColor(ChatColor.translateAlternateColorCodes('§', inventoryTitle));
-        Inventory gui = Bukkit.createInventory(null, 54, ChatColor.BLACK + inventoryTitle);
-
-        //0~3
-        for (int i = 0; i < 4; i++) {
-            if (armorItems[i] != null && armorItems[i].getType() != Material.AIR) {
-                gui.setItem(i, armorItems[i]);
-            }
-        }
-
-        //5
-        if (offhandItem != null && offhandItem.getType() != Material.AIR) {
-            gui.setItem(4, offhandItem);
-        }
-
-        //9~17
-        ItemStack glass = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
-        for (int i = 0; i < 9; i++) {
-            gui.setItem(i+9, glass);
-        }
-
-        // 나머지 인벤토리 아이템을 3번째 행부터 채움
-        for (int i = 9; i < 36; i++) {
-            if (items[i] != null && items[i].getType() != Material.AIR) {
-                gui.setItem(i + 9, items[i]);
-            }
-        }
-
-        // 핫바는 마지막 행에 표시
-        for (int i = 0; i < 9; i++) {
-            if (items[i] != null && items[i].getType() != Material.AIR) {
-                gui.setItem(i + 45, items[i]); // 핫바 아이템
-            }
-        }
-
-
-        viewer.openInventory(gui);
-    }
 
     public String getFormattedMessage(String key, Map<String, String> placeholders) {
         String message = plugin.getConfig().getString(key);

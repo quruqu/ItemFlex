@@ -1,6 +1,7 @@
 name: ItemFlex
-version: '1.0-SNAPSHOT'
-main: me.ujun.Main
+version: '1.0-BETA'
+main: me.ujun.ItemFlexPlugin
+author: Ujun
 api-version: '1.21'
 commands:
   showitem:
