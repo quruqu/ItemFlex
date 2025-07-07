@@ -1,5 +1,6 @@
 package me.ujun.commands;
 
+
 import me.ujun.ItemFlexPlugin;
 import me.ujun.utils.Storage;
 import org.bukkit.Bukkit;
@@ -153,6 +154,5 @@ public class SeeItemCMD implements CommandExecutor {
 
         viewer.openInventory(gui);
     }
-
 
 }
