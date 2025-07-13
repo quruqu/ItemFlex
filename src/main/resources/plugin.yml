@@ -1,5 +1,5 @@
 name: ItemFlex
-version: '1.0-BETA'
+version: 1.0.0
 main: me.ujun.ItemFlexPlugin
 author: U_jun
 api-version: '1.21'
